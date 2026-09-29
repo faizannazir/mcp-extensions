@@ -1,0 +1,64 @@
+import {
+  createElicitInput,
+  createOpenAIFormContentSchema,
+  OpenAIFormResultSchema,
+  type OpenAIFormRequestParams,
+} from "@openai/mcp-extensions/server";
+export type RequestClient = Parameters<typeof createElicitInput>[0]["server"];
+
+/** Keep compatibility with older dev-app image dialogs at the demo boundary. */
+export async function elicitCadForm(
+  client: RequestClient,
+  params: OpenAIFormRequestParams,
+) {
+  const capabilities = client.getClientCapabilities();
+  if (
+    capabilities?.extensions?.["openai/elicitation"] != null ||
+    capabilities?.extensions?.["openai/form"] == null
+  )
+    return createElicitInput({ server: client })(params, { timeout: 300000 });
+  const properties: Record<string, unknown> = {};
+  for (const [name, value] of Object.entries(
+    params.requestedSchema.properties,
+  )) {
+    const field = value as Record<string, unknown>;
+    if (field["x-openai-input"] != null)
+      throw Error("File inputs require openai/elicitation form support.");
+    const choices = field["oneOf"] as
+      Array<Record<string, unknown>> | undefined;
+    properties[name] = choices?.some(
+      (option) => option["x-openai-thumbnail"] != null,
+    )
+      ? {
+          type: "openai/imagePicker",
+          title: field["title"],
+          items: choices.map((option) => ({
+            id: option["const"],
+            title: option["title"],
+            image: (
+              option["x-openai-thumbnail"] as { src?: string } | undefined
+            )?.src,
+          })),
+        }
+      : field;
+  }
+  const result = await client.request(
+    {
+      method: "openai/form",
+      params: {
+        message: params.message,
+        requestedSchema: { ...params.requestedSchema, properties },
+      },
+    },
+    OpenAIFormResultSchema,
+    { timeout: 300000 },
+  );
+  return result.action === "accept"
+    ? {
+        ...result,
+        content: createOpenAIFormContentSchema(params.requestedSchema).parse(
+          result.content,
+        ),
+      }
+    : result;
+}

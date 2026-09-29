@@ -1,0 +1,160 @@
+name: Release packages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Existing release version to rebuild (for example 0.1.1)
+        required: true
+        type: string
+      package:
+        description: Package to rebuild
+        type: choice
+        options: [python, node]
+        default: python
+      publish:
+        description: Publish publicly after validation and environment approval
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    if: github.event_name == 'push' && vars.RELEASE_PLEASE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: release
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      python_tag: ${{ steps.release.outputs['python--tag_name'] }}
+      node_tag: ${{ steps.release.outputs['typescript--tag_name'] }}
+      python_sha: ${{ steps.release.outputs['python--sha'] }}
+      node_sha: ${{ steps.release.outputs['typescript--sha'] }}
+      python_version: ${{ steps.release.outputs['python--version'] }}
+      node_version: ${{ steps.release.outputs['typescript--version'] }}
+    steps:
+      - name: Checkout release configuration
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify release history boundary
+        run: |
+          bootstrap_sha=$(jq -r '.["bootstrap-sha"]' release-please-config.json)
+          if ! git merge-base --is-ancestor "$bootstrap_sha" HEAD; then
+            echo "::error::bootstrap-sha must exist in this repository's main history. After a code-copy migration, set it to the destination commit immediately before the import."
+            exit 1
+          fi
+      - name: Create release bot token
+        if: vars.USE_SDK_RELEASE_APP == 'true'
+        id: token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.OPENAI_SDKS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OPENAI_SDKS_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+
+      - name: Update release PR or create GitHub releases
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ steps.token.outputs.token || github.token }}
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  validate-python:
+    needs: release-please
+    if: >-
+      always() && !cancelled() && github.ref == 'refs/heads/main' &&
+      ((github.event_name == 'workflow_dispatch' && inputs.package == 'python') ||
+      needs.release-please.outputs.python_tag != '')
+    uses: ./.github/workflows/checks.yml
+    with:
+      ref: ${{ needs.release-please.outputs.python_sha || format('refs/tags/python-v{0}', inputs.version) }}
+      version: ${{ needs.release-please.outputs.python_version || inputs.version }}
+      package: python
+
+  validate-node:
+    needs: release-please
+    if: >-
+      always() && !cancelled() && github.ref == 'refs/heads/main' &&
+      ((github.event_name == 'workflow_dispatch' && inputs.package == 'node') ||
+      needs.release-please.outputs.node_tag != '')
+    uses: ./.github/workflows/checks.yml
+    with:
+      ref: ${{ needs.release-please.outputs.node_sha || format('refs/tags/node-v{0}', inputs.version) }}
+      version: ${{ needs.release-please.outputs.node_version || inputs.version }}
+      package: node
+
+  publish-pypi:
+    needs: validate-python
+    if: >-
+      always() && !cancelled() && needs.validate-python.result == 'success' && github.repository == 'openai/mcp-extensions' &&
+      vars.PUBLISH_PYPI_ENABLED == 'true' &&
+      (github.event_name == 'push' || inputs.publish)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/project/openai-mcp-extensions/
+    permissions:
+      id-token: write
+    steps:
+      - name: Download checked distributions
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: packages-python
+          path: packages
+      - name: Publish to PyPI with OIDC
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: packages/python/
+
+  publish-npm:
+    needs: validate-node
+    if: >-
+      always() && !cancelled() && needs.validate-node.result == 'success' && github.repository == 'openai/mcp-extensions' &&
+      vars.PUBLISH_NPM_ENABLED == 'true' &&
+      (github.event_name == 'push' || inputs.publish)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/@openai/mcp-extensions
+    permissions:
+      id-token: write
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24
+      - name: Install npm with trusted publishing support
+        run: npm install --global npm@11.19.0 --registry=https://openai.firewall.socket.dev/npm/
+      - name: Download checked package
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: packages-node
+          path: packages
+      - name: Explain unavailable source provenance
+        if: ${{ !github.event.repository.private && needs.validate-node.outputs.source_sha != github.sha }}
+        run: echo "::warning::Publishing a rebuilt historical tag with npm provenance disabled because its source commit differs from this workflow's commit. OIDC authentication still applies."
+      - name: Publish to npm with OIDC
+        # npm derives signed source metadata from the workflow SHA, not the artifact.
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+          NPM_CONFIG_PROVENANCE: ${{ !github.event.repository.private && needs.validate-node.outputs.source_sha == github.sha && 'true' || 'false' }}
+        run: npm publish packages/node/package.tgz --access public --ignore-scripts

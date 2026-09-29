@@ -1,0 +1,14 @@
+node_modules/
+.venv/
+.ruff_cache/
+__pycache__/
+*.egg-info/
+dist/
+build/
+.local/
+pnpm-lock.yaml
+python/uv.lock
+
+# release-please owns changelog formatting.
+python/CHANGELOG.md
+typescript/CHANGELOG.md

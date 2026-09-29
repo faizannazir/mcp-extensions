@@ -1,0 +1,38 @@
+{
+  "name": "bits-and-bolts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A CAD library plugin for OpenAI MCP app and server extensions.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "build:plugin:dev": "node ./scripts/dev.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.7.1",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@openai/mcp-extensions": "workspace:*",
+    "occt-import-js": "0.0.23",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "three": "^0.185.1",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.2",
+    "@types/node": "22.19.0",
+    "@types/react": "^19.2.6",
+    "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.185.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "esbuild": "^0.28.1",
+    "tailwindcss": "4.3.2",
+    "typescript": "^5.9.3",
+    "vite": "8.1.4"
+  }
+}

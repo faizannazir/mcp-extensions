@@ -1,0 +1,135 @@
+name: Package checks
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        default: ""
+      version:
+        type: string
+        default: ""
+      package:
+        type: string
+        default: ""
+    outputs:
+      source_sha:
+        description: Commit used to build the checked artifacts
+        value: ${{ jobs.check.outputs.source_sha }}
+
+permissions:
+  contents: read
+
+env:
+  NPM_CONFIG_REGISTRY: https://openai.firewall.socket.dev/npm/
+  PIP_INDEX_URL: https://openai.firewall.socket.dev/pypi/simple/
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      source_sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      # This runs from the caller's trusted workflow before any code from the selected tag.
+      - name: Verify release tag before executing source
+        if: inputs.package != ''
+        env:
+          RELEASE_PACKAGE: ${{ inputs.package }}
+          EXPECTED_VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_PACKAGE" == python || "$RELEASE_PACKAGE" == node ]] || exit 1
+          [[ "$EXPECTED_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+          tag="refs/tags/$RELEASE_PACKAGE-v$EXPECTED_VERSION"
+          head_sha=$(git rev-parse HEAD)
+          tag_sha=$(git rev-parse "$tag^{commit}")
+          [[ "$tag_sha" == "$head_sha" ]] || exit 1
+          git merge-base --is-ancestor "$head_sha" origin/main
+
+      - name: Record artifact source
+        id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Rehearse release-please
+        # Keep this version aligned with the library bundled in release-please-action.
+        run: |
+          npm install --prefix "$RUNNER_TEMP/release-please" --ignore-scripts --no-audit --no-fund release-please@17.6.0
+          node .github/scripts/rehearse_releases.mjs "$RUNNER_TEMP/release-please"
+
+      - name: Install Python tools
+        run: |
+          python -m pip install --upgrade pip
+          # Keep PyJWT on a release that has cleared Socket's cooldown.
+          python -m pip install -e python --group python/pyproject.toml:dev "pyjwt==2.14.0"
+
+      - name: Check TypeScript
+        run: pnpm check
+
+      - name: Check Python
+        run: |
+          ruff check python/src .github/scripts
+          ruff format --check python/src .github/scripts
+          pyright --project python/pyproject.toml
+          python -c "import openai_mcp_extensions"
+          python -m unittest discover -s .github/scripts -p 'test_*.py'
+
+      - name: Build and check release distributions
+        env:
+          EXPECTED_VERSION: ${{ inputs.version }}
+          RELEASE_PACKAGE: ${{ inputs.package }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/packages/python" "$RUNNER_TEMP/packages/node"
+          python -m build --outdir "$RUNNER_TEMP/packages/python" python
+          python -m twine check --strict "$RUNNER_TEMP/packages/python/"*
+          pnpm --filter @openai/mcp-extensions pack --out "$RUNNER_TEMP/packages/node/package.tgz"
+          python .github/scripts/check_packages.py "$RUNNER_TEMP/packages"
+          python -m venv "$RUNNER_TEMP/wheel-smoke"
+          "$RUNNER_TEMP/wheel-smoke/bin/pip" install "$RUNNER_TEMP/packages/python/"*.whl "pyjwt==2.14.0"
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/wheel-smoke/bin/python" -c "import openai_mcp_extensions; import openai_mcp_form_protocol"
+
+      - name: Upload release distributions
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packages${{ inputs.package && format('-{0}', inputs.package) || '' }}
+          path: ${{ runner.temp }}/packages/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Package marketplace
+        run: python .github/scripts/package_marketplace.py "$RUNNER_TEMP/marketplace.zip"
+
+      - name: Upload marketplace
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.ref == ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: marketplace
+          path: ${{ runner.temp }}/marketplace.zip
+          if-no-files-found: error
+          retention-days: 1

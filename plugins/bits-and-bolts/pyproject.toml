@@ -1,0 +1,15 @@
+[project]
+name = "bits-and-bolts"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+models = [
+  "shapely==2.1.2",
+  "svgelements==1.9.6",
+]
+
+[tool.setuptools]
+packages = []
+py-modules = []

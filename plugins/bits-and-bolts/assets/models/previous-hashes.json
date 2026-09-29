@@ -1,0 +1,115 @@
+{
+  "part_micro_controller": [
+    "95698512c5a45ae928f9a93929abcbaa8b47ebb24cf30a325fdf323656f551eb",
+    "2acca76cee4d114e8e7564c4f4b2062e620bbc4dda67f8f7d8d658c9cbdc0834",
+    "2e445ec62ab76b8973719cd58ee6acc94d07c1ad793c6fd15502511cdc37928a"
+  ],
+  "part_agent_dial": [
+    "72530e08441c50d4d75de4e28009f5efe4c82de15f924c7a41aa6044d57e14ec",
+    "e08de6f24d9ffd4087cba2609b9ffc287d2f234e06a3964fb3637eaad7cc332d"
+  ],
+  "part_command_keycap": [
+    "be8ea9c387a7085ad994ab8dd478fd9fa84f6db370f4a4a9a434ca86443907c6",
+    "8666541f78cb9239755adc2690c0f276dd8094560707313b33f3a3036d1327c5"
+  ],
+  "part_keycap_agent": [
+    "5f7d1ceaad778f0808329c1404f26adc55de7b89793e76990b53a75c48ec5b58",
+    "1725743988b7d7578442152beabf9306a0efbccc6d0742a8832b8b128449be6d"
+  ],
+  "part_joystick": [
+    "e32c7d079bedd881405d888f6cb980a26aa1b2422f7b4e8a576860a4d23b7d29"
+  ],
+  "part_keycap_bug": [
+    "fb7649512a6ebdb966de6ac11a01bd2b7dca85bb602c343b78e1119f8ce50c8b"
+  ],
+  "part_keycap_openai": [
+    "f2c8b7c0834a2610d7bd81e716f552800191b9f696a24cd450d93d2a1027e6c4"
+  ],
+  "part_keycap_terminal": [
+    "c881e9fc64ec37d325910ac67d551f6584ab6c6451a169ac3b0e56ba29527b46"
+  ],
+  "part_keycap_download": [
+    "4b59984597663b12c2cee6b179accce1053e96cbcd48c07fa4d7b19532618521"
+  ],
+  "part_keycap_trash": [
+    "8838566aa29ad94b486e15e7c4cd5b8e3eaf89f573d711eafce0566ed7f7a4e1"
+  ],
+  "part_keycap_compose": [
+    "1bfdff123387f2ed8fe2d159ec20798927de17edaf665885c11e4317f530b736"
+  ],
+  "part_keycap_pointer": [
+    "aa0897beb3e6311e70d71a4cd768166374b8cd107857881ee3de200ebae52205"
+  ],
+  "part_keycap_star": [
+    "460639b64fb7b2962d7d7f6941e13926e8f25ea4e605227cc308127fbbec5420"
+  ],
+  "part_keycap_diff": [
+    "790cfbf826659ae69b45ea92d8bbca397695338d6e74ccf4dc93fd6ffa162acb"
+  ],
+  "part_keycap_play": [
+    "f99b939ebcf6459f1057746d2f9da549c80080c4f2310aa71a0ca3dd6d346ea3"
+  ],
+  "part_keycap_pull_request_draft": [
+    "ccba022a80ee9408f9b752e4812f876ca48406861b5f11e239b3d0e82ad4b3a6"
+  ],
+  "part_keycap_branch": [
+    "c05d0b400d5d7448caca27818634c2b89d26308058cace2585b68ed0937cdb12"
+  ],
+  "part_keycap_pull_request": [
+    "5f333a0f33f5f59c8c83bededb0530507fc0a106ad2687be3d38b407cd59d72b"
+  ],
+  "part_keycap_merge": [
+    "4e54557191ce99548a7858dc38af32a91ac0bb6059c3415f6e8373fee13ae025"
+  ],
+  "part_keycap_paint": [
+    "8f478d9ab345e2c1e13513b0f479bf6fb9263d7510ca695c93772c83d1c1a4d3"
+  ],
+  "part_keycap_flask": [
+    "e65f97df6ba95339c8f8cf633fc91a3e3bea3624974a92042c02b056660f3039"
+  ],
+  "part_keycap_confetti": [
+    "93786bd1c2d337467cd6e4b43da57ae40a86b4b4dcb4bd799d8bcf639e4f46bb"
+  ],
+  "part_keycap_clock": [
+    "16c66c4227b60e5116da9c8f1e513358c3190bd278b8e9f01c7f0b3491674dcf"
+  ],
+  "part_keycap_brain": [
+    "94abe73b333d93f8bd739cf24839769256bb78924d6c5f13ef7d73b570f555de"
+  ],
+  "part_keycap_brain_outline": [
+    "a6d64f11400e5ea2c0126467d6453637cd3f6aff74e3f6ac44775fb09add98af"
+  ],
+  "part_keycap_fast": [
+    "dee2973c57e5d12af498c84c7e5027282349a103c18f37443acf7df7dceeb40a"
+  ],
+  "part_keycap_approve": [
+    "532559fda24b1e3c3ce715e96bddf1926523283c321fac7a05ebd2f94b968a64"
+  ],
+  "part_keycap_reject": [
+    "a53deaa9a4a8d97fc84342ab52a0f707db23fc102a1bc9b339a01f9e37c3add7"
+  ],
+  "part_keycap_worktree": [
+    "36ee1a0612740cc27bff5ca8a1fda28fa1099ae9eb4b487f905c4d38a8f5d973"
+  ],
+  "part_keycap_settings": [
+    "90d7288e7175252cea7c806978ec3a4e3081df9f312a8303156784ba8a72d48e"
+  ],
+  "part_keycap_folder_plus": [
+    "c49b97b6ee05128614fab5876bfd62441242dd7281b42c1d1dcabf31dd46e093"
+  ],
+  "part_keycap_cloud_upload": [
+    "0964d2028123ce3eab861959556fcaf0a5c79c877ecffc83b862e9c4bfea6fb2"
+  ],
+  "part_keycap_apps": [
+    "c235bfd83f604f8803320545d6d576326178612686955d2613affcf3d595108a"
+  ],
+  "part_keycap_yolo": [
+    "d4af80beb27124f7d5563fe9570fff44852ccd6308d1119ecb5c16a2722aef56"
+  ],
+  "part_keycap_yeet": [
+    "da328b3b91d75ecbcda6aedde18fc249c37e114a12e203ebe2d974fa6ca9d4af"
+  ],
+  "part_keycap_microphone": [
+    "2e37bb09ce710a3338e7fb16735635881b6759fdaa1bb2d776fa24a56fa53e80"
+  ]
+}

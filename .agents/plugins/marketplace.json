@@ -1,0 +1,20 @@
+{
+  "name": "mcp-extensions-early-access",
+  "interface": {
+    "displayName": "OpenAI MCP Extensions (Early Access)"
+  },
+  "plugins": [
+    {
+      "name": "bits-and-bolts",
+      "source": {
+        "source": "local",
+        "path": "./plugins/bits-and-bolts"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

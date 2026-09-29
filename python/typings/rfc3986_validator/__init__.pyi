@@ -1,0 +1,3 @@
+from re import Match
+
+def validate_rfc3986(url: str, rule: str = "URI") -> Match[str] | None: ...

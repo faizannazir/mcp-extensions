@@ -1,0 +1,30 @@
+{
+  "name": "mcp-extensions-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint": "eslint . --max-warnings 0",
+    "types": "pnpm --filter @openai/mcp-extensions types",
+    "plugins:types": "pnpm --filter bits-and-bolts typecheck",
+    "plugins:build": "pnpm --filter bits-and-bolts build",
+    "check": "pnpm format && pnpm lint && pnpm types && pnpm build && pnpm plugins:types && pnpm package:check",
+    "package:check": "pnpm --filter @openai/mcp-extensions package:check"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.4",
+    "@types/node": "22.19.0",
+    "eslint": "9.39.4",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.9.4",
+    "publint": "0.3.21",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.56.1"
+  }
+}

@@ -1,0 +1,14 @@
+node_modules/
+.venv/
+.ruff_cache/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.local/
+*.tgz
+.env
+.env.*
+.DS_Store
+python/uv.lock

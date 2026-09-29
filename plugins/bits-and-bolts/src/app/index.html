@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        font: 14px var(--font-sans, system-ui);
+        background: var(--color-background-primary, Canvas);
+        color: var(--color-text-primary, CanvasText);
+      }
+      [hidden] {
+        display: none !important;
+      }
+      header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      h1 {
+        font-size: 19px;
+        margin: 0;
+        flex: 1;
+      }
+      button,
+      select,
+      input,
+      textarea {
+        font: inherit;
+        border: 1px solid var(--color-border-primary, #a2aab4);
+        border-radius: 8px;
+        padding: 8px;
+        background: var(--color-background-primary, Canvas);
+        color: inherit;
+      }
+      button {
+        cursor: var(--cursor-interaction, pointer);
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      button:hover:not(:disabled) {
+        border-color: #5296c6;
+      }
+      #parts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 10px;
+        margin: 14px 0;
+      }
+      .part {
+        text-align: left;
+        min-height: 115px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .part img {
+        width: 100%;
+        height: 130px;
+        object-fit: contain;
+      }
+      small,
+      .muted {
+        opacity: 0.7;
+        font-size: 12px;
+      }
+      #search {
+        width: 100%;
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 12px 0;
+      }
+      #viewport {
+        height: 320px;
+      }
+      canvas {
+        width: 100%;
+        height: 320px;
+        border-radius: 12px;
+        touch-action: none;
+        display: block;
+      }
+      textarea {
+        width: 100%;
+        margin-top: 10px;
+        resize: vertical;
+      }
+      #settings label {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        max-width: 440px;
+        margin: 18px 0;
+      }
+      footer {
+        font-size: 12px;
+        margin-top: 16px;
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+      }
+      #status {
+        overflow-wrap: anywhere;
+      }
+      input[type="file"] {
+        max-width: 100%;
+      }
+      @media (max-width: 420px) {
+        body {
+          padding: 10px;
+        }
+        #viewport,
+        canvas {
+          height: 260px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <button id="back">Library</button>
+      <h1 id="heading">Parts Library</h1>
+      <button id="settings-button">Settings</button
+      ><button id="fullscreen">Expand</button>
+    </header>
+    <section id="library">
+      <p class="muted"><!-- BUILD_DESCRIPTION --></p>
+      <input
+        id="search"
+        aria-label="Search parts"
+        placeholder="Search parts…"
+      />
+      <div id="parts"></div>
+      <label>Import CAD <input id="import" type="file" accept=".stl" /></label>
+      <div id="host-file" hidden class="toolbar">
+        <label
+          >Local file path
+          <input
+            id="host-file-path"
+            required
+            placeholder="/path/to/part.stl" /></label
+        ><button id="host-file-open" type="button">Open in Codex</button>
+      </div>
+      <p class="muted">
+        Illustrative sample geometry. Not fit-verified for manufacturing.
+      </p>
+    </section>
+    <section id="viewer" hidden>
+      <div class="toolbar">
+        <select id="camera" aria-label="Camera">
+          <option value="custom" disabled>Custom</option>
+          <option value="isometric">Isometric</option>
+          <option value="front">Front</option>
+          <option value="top">Top</option></select
+        ><select id="mode" aria-label="Render mode">
+          <option value="edges">Edges</option>
+          <option value="solid">Solid</option>
+          <option value="wireframe">Wireframe</option></select
+        ><button id="fit">Fit</button
+        ><button id="rotate">Rotate geometry 90°</button>
+      </div>
+      <div id="viewport" aria-label="3D part viewer"></div>
+      <p id="selection" class="muted"></p>
+      <p id="dimensions" class="muted"></p>
+      <textarea
+        id="note"
+        aria-label="Inspection note"
+        placeholder="Add an inspection note…"
+      ></textarea>
+      <div class="toolbar">
+        <button id="share">Attach view + note</button
+        ><button id="ask">Ask about this view</button
+        ><button id="download">Download STL</button
+        ><button id="save" disabled>Save file</button
+        ><button id="reload">Reload file</button
+        ><button id="discard">Discard edits</button
+        ><button id="open-source" hidden>Open source in Codex</button
+        ><button id="add-library">Add to library</button>
+      </div>
+    </section>
+    <section id="settings" hidden>
+      <label
+        >Units<select id="units">
+          <option value="mm">Millimeters</option>
+          <option value="in">Inches</option>
+        </select></label
+      ><label>Show grid<input id="grid" type="checkbox" checked /></label
+      ><label
+        >Default camera<select id="default-camera">
+          <option value="isometric">Isometric</option>
+          <option value="front">Front</option>
+          <option value="top">Top</option>
+        </select></label
+      >
+      <p id="settings-info" class="muted">
+        Demo defaults last for this MCP run and reset when the server restarts.
+      </p>
+      <button id="skills" hidden>Browse skills</button>
+    </section>
+    <footer>
+      <span id="status" role="status"></span
+      ><span id="attached">Context state unavailable</span>
+    </footer>
+    <!-- APP_SCRIPT -->
+  </body>
+</html>

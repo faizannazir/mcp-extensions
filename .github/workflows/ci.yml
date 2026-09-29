@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  # Keep the required status name used by the repository's branch rules.
+  check:
+    needs: checks
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Require successful checks
+        env:
+          RESULT: ${{ needs.checks.result }}
+        run: test "$RESULT" = success
+
+  publish-marketplace:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    concurrency:
+      group: marketplace-release
+      queue: max
+    steps:
+      - name: Download marketplace
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: marketplace
+
+      - name: Publish latest marketplace
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          notes="Prebuilt marketplace from $GITHUB_SHA. Updated in place after successful main builds."
+          if gh release view marketplace-latest > /dev/null 2>&1; then
+            comparison=$(gh api "repos/$GH_REPO/compare/marketplace-latest...$GITHUB_SHA" --jq .status)
+            if [ "$comparison" != "ahead" ] && [ "$comparison" != "identical" ]; then
+              echo "Skipping a build that does not follow the published commit."
+              exit 0
+            fi
+            gh release upload marketplace-latest marketplace.zip --clobber
+            gh api --method PATCH "repos/$GH_REPO/git/refs/tags/marketplace-latest" \
+              -f sha="$GITHUB_SHA" --silent
+            gh release edit marketplace-latest --notes "$notes" --latest=false
+          else
+            gh release create marketplace-latest marketplace.zip \
+              --target "$GITHUB_SHA" \
+              --title "Latest marketplace" \
+              --notes "$notes" \
+              --prerelease \
+              --latest=false
+          fi

@@ -1,0 +1,254 @@
+[
+  {
+    "id": "part_keycap_agent",
+    "name": "Translucent agent keycap (1U)",
+    "fileName": "keycap-agent.stl",
+    "assetPath": "keycaps/agent.stl",
+    "tags": ["codex-micro", "reference", "keycap-agent"]
+  },
+  {
+    "id": "part_joystick",
+    "name": "Codex Micro joystick cap",
+    "fileName": "joystick-cap.stl",
+    "assetPath": "joystick-cap.stl",
+    "tags": ["codex-micro", "reference", "joystick"]
+  },
+  {
+    "id": "part_agent_dial",
+    "name": "Codex Micro sculpted dial",
+    "fileName": "agent-dial.stl",
+    "assetPath": "agent-dial.stl",
+    "tags": ["codex-micro", "reference", "agent-dial"]
+  },
+  {
+    "id": "part_micro_controller",
+    "name": "Codex Micro assembly",
+    "fileName": "micro-controller.stl",
+    "assetPath": "micro-controller.stl",
+    "tags": ["codex-micro", "reference", "micro-controller"]
+  },
+  {
+    "id": "part_keycap_bug",
+    "name": "Bug keycap (1U)",
+    "fileName": "keycap-bug.stl",
+    "assetPath": "keycaps/bug.stl",
+    "tags": ["codex-micro", "keycap", "1u", "bug"]
+  },
+  {
+    "id": "part_keycap_openai",
+    "name": "OpenAI keycap (1U)",
+    "fileName": "keycap-openai.stl",
+    "assetPath": "keycaps/openai.stl",
+    "tags": ["codex-micro", "keycap", "1u", "openai"]
+  },
+  {
+    "id": "part_keycap_terminal",
+    "name": "Terminal keycap (1U)",
+    "fileName": "keycap-terminal.stl",
+    "assetPath": "keycaps/terminal.stl",
+    "tags": ["codex-micro", "keycap", "1u", "terminal"]
+  },
+  {
+    "id": "part_keycap_download",
+    "name": "Download keycap (1U)",
+    "fileName": "keycap-download.stl",
+    "assetPath": "keycaps/download.stl",
+    "tags": ["codex-micro", "keycap", "1u", "download"]
+  },
+  {
+    "id": "part_keycap_trash",
+    "name": "Trash keycap (1U)",
+    "fileName": "keycap-trash.stl",
+    "assetPath": "keycaps/trash.stl",
+    "tags": ["codex-micro", "keycap", "1u", "trash"]
+  },
+  {
+    "id": "part_keycap_compose",
+    "name": "New task keycap (1U)",
+    "fileName": "keycap-compose.stl",
+    "assetPath": "keycaps/compose.stl",
+    "tags": ["codex-micro", "keycap", "1u", "compose"]
+  },
+  {
+    "id": "part_keycap_pointer",
+    "name": "Pointer keycap (1U)",
+    "fileName": "keycap-pointer.stl",
+    "assetPath": "keycaps/pointer.stl",
+    "tags": ["codex-micro", "keycap", "1u", "pointer"]
+  },
+  {
+    "id": "part_keycap_star",
+    "name": "Star keycap (1U)",
+    "fileName": "keycap-star.stl",
+    "assetPath": "keycaps/star.stl",
+    "tags": ["codex-micro", "keycap", "1u", "star"]
+  },
+  {
+    "id": "part_keycap_diff",
+    "name": "Diff keycap (1U)",
+    "fileName": "keycap-diff.stl",
+    "assetPath": "keycaps/diff.stl",
+    "tags": ["codex-micro", "keycap", "1u", "diff"]
+  },
+  {
+    "id": "part_keycap_play",
+    "name": "Play keycap (1U)",
+    "fileName": "keycap-play.stl",
+    "assetPath": "keycaps/play.stl",
+    "tags": ["codex-micro", "keycap", "1u", "play"]
+  },
+  {
+    "id": "part_keycap_pull_request_draft",
+    "name": "Draft pull request keycap (1U)",
+    "fileName": "keycap-pull-request-draft.stl",
+    "assetPath": "keycaps/pull-request-draft.stl",
+    "tags": ["codex-micro", "keycap", "1u", "pull-request-draft"]
+  },
+  {
+    "id": "part_keycap_branch",
+    "name": "Branch keycap (1U)",
+    "fileName": "keycap-branch.stl",
+    "assetPath": "keycaps/branch.stl",
+    "tags": ["codex-micro", "keycap", "1u", "branch"]
+  },
+  {
+    "id": "part_keycap_pull_request",
+    "name": "Pull request keycap (1U)",
+    "fileName": "keycap-pull-request.stl",
+    "assetPath": "keycaps/pull-request.stl",
+    "tags": ["codex-micro", "keycap", "1u", "pull-request"]
+  },
+  {
+    "id": "part_keycap_merge",
+    "name": "Merge keycap (1U)",
+    "fileName": "keycap-merge.stl",
+    "assetPath": "keycaps/merge.stl",
+    "tags": ["codex-micro", "keycap", "1u", "merge"]
+  },
+  {
+    "id": "part_keycap_paint",
+    "name": "Paint keycap (1U)",
+    "fileName": "keycap-paint.stl",
+    "assetPath": "keycaps/paint.stl",
+    "tags": ["codex-micro", "keycap", "1u", "paint"]
+  },
+  {
+    "id": "part_keycap_flask",
+    "name": "Flask keycap (1U)",
+    "fileName": "keycap-flask.stl",
+    "assetPath": "keycaps/flask.stl",
+    "tags": ["codex-micro", "keycap", "1u", "flask"]
+  },
+  {
+    "id": "part_keycap_confetti",
+    "name": "Confetti keycap (1U)",
+    "fileName": "keycap-confetti.stl",
+    "assetPath": "keycaps/confetti.stl",
+    "tags": ["codex-micro", "keycap", "1u", "confetti"]
+  },
+  {
+    "id": "part_keycap_clock",
+    "name": "Clock keycap (1U)",
+    "fileName": "keycap-clock.stl",
+    "assetPath": "keycaps/clock.stl",
+    "tags": ["codex-micro", "keycap", "1u", "clock"]
+  },
+  {
+    "id": "part_keycap_brain",
+    "name": "Brain keycap (1U)",
+    "fileName": "keycap-brain.stl",
+    "assetPath": "keycaps/brain.stl",
+    "tags": ["codex-micro", "keycap", "1u", "brain"]
+  },
+  {
+    "id": "part_keycap_brain_outline",
+    "name": "Brain outline keycap (1U)",
+    "fileName": "keycap-brain-outline.stl",
+    "assetPath": "keycaps/brain-outline.stl",
+    "tags": ["codex-micro", "keycap", "1u", "brain-outline"]
+  },
+  {
+    "id": "part_keycap_fast",
+    "name": "Fast keycap (1U)",
+    "fileName": "keycap-fast.stl",
+    "assetPath": "keycaps/fast.stl",
+    "tags": ["codex-micro", "keycap", "1u", "fast"]
+  },
+  {
+    "id": "part_keycap_approve",
+    "name": "Approve keycap (1U)",
+    "fileName": "keycap-approve.stl",
+    "assetPath": "keycaps/approve.stl",
+    "tags": ["codex-micro", "keycap", "1u", "approve"]
+  },
+  {
+    "id": "part_keycap_reject",
+    "name": "Reject keycap (1U)",
+    "fileName": "keycap-reject.stl",
+    "assetPath": "keycaps/reject.stl",
+    "tags": ["codex-micro", "keycap", "1u", "reject"]
+  },
+  {
+    "id": "part_keycap_worktree",
+    "name": "Worktree keycap (1U)",
+    "fileName": "keycap-worktree.stl",
+    "assetPath": "keycaps/worktree.stl",
+    "tags": ["codex-micro", "keycap", "1u", "worktree"]
+  },
+  {
+    "id": "part_keycap_settings",
+    "name": "Settings keycap (1U)",
+    "fileName": "keycap-settings.stl",
+    "assetPath": "keycaps/settings.stl",
+    "tags": ["codex-micro", "keycap", "1u", "settings"]
+  },
+  {
+    "id": "part_keycap_folder_plus",
+    "name": "Add folder keycap (1U)",
+    "fileName": "keycap-folder-plus.stl",
+    "assetPath": "keycaps/folder-plus.stl",
+    "tags": ["codex-micro", "keycap", "1u", "folder-plus"]
+  },
+  {
+    "id": "part_keycap_cloud_upload",
+    "name": "Cloud upload keycap (1U)",
+    "fileName": "keycap-cloud-upload.stl",
+    "assetPath": "keycaps/cloud-upload.stl",
+    "tags": ["codex-micro", "keycap", "1u", "cloud-upload"]
+  },
+  {
+    "id": "part_keycap_apps",
+    "name": "Apps keycap (1U)",
+    "fileName": "keycap-apps.stl",
+    "assetPath": "keycaps/apps.stl",
+    "tags": ["codex-micro", "keycap", "1u", "apps"]
+  },
+  {
+    "id": "part_keycap_yolo",
+    "name": "Yolo keycap (1U)",
+    "fileName": "keycap-yolo.stl",
+    "assetPath": "keycaps/yolo.stl",
+    "tags": ["codex-micro", "keycap", "1u", "yolo"]
+  },
+  {
+    "id": "part_keycap_yeet",
+    "name": "Yeet keycap (1U)",
+    "fileName": "keycap-yeet.stl",
+    "assetPath": "keycaps/yeet.stl",
+    "tags": ["codex-micro", "keycap", "1u", "yeet"]
+  },
+  {
+    "id": "part_keycap_microphone",
+    "name": "Microphone keycap (2U)",
+    "fileName": "keycap-microphone.stl",
+    "assetPath": "keycaps/microphone.stl",
+    "tags": ["codex-micro", "keycap", "2u", "microphone"]
+  },
+  {
+    "id": "part_command_keycap",
+    "name": "Codex keycap (1U)",
+    "fileName": "command-keycap.stl",
+    "assetPath": "keycaps/codex.stl",
+    "tags": ["codex-micro", "keycap", "1u", "codex"]
+  }
+]
