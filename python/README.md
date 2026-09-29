@@ -26,7 +26,7 @@ openai_extensions = OpenAIExtensions()
 
 Register extension handlers and resources before constructing `MCPServer`.
 
-The following examples are separate configurations. Include each extension your server uses in its `extensions` list.
+The following examples build on a single `OpenAIExtensions` instance that composes all server-side extensions.
 
 ## [Structured Settings](../docs/spec.md#structured-settings)
 
@@ -38,6 +38,7 @@ from mcp.server.mcpserver.context import Context
 from pydantic import BaseModel, Field
 
 from openai_mcp_extensions import (
+    OpenAIExtensions,
     OpenAISettings,
     OpenAISettingsGroup,
     OpenAISettingsProperty,
@@ -50,16 +51,19 @@ class Preferences(BaseModel):
     show_grid: bool = Field(alias="showGrid", title="Show grid")
 
 
-settings = OpenAISettings(
-    schema=Preferences,
-    # Optionally arrange fields into groups.
-    # Omitted properties appear in an "Other settings" group below the listed groups.
-    layout=[
-        OpenAISettingsGroup(
-            title="Display",
-            items=[OpenAISettingsProperty(property="units"), OpenAISettingsProperty(property="showGrid")],
-        ),
-    ],
+openai_extensions = OpenAIExtensions()
+settings = openai_extensions.register_settings(
+    OpenAISettings(
+        schema=Preferences,
+        # Optionally arrange fields into groups.
+        # Omitted properties appear in an "Other settings" group below the listed groups.
+        layout=[
+            OpenAISettingsGroup(
+                title="Display",
+                items=[OpenAISettingsProperty(property="units"), OpenAISettingsProperty(property="showGrid")],
+            ),
+        ],
+    )
 )
 
 
@@ -77,7 +81,7 @@ async def update_settings(set: dict[str, Any], context: Context[Any, Any]) -> Pr
 
 server = MCPServer(
     "viewer",
-    extensions=[settings],
+    extensions=[openai_extensions],
     # Only needed if your server does not support the 2026-07-28 spec and/or supports
     # the legacy initialize handshake.
     # https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle#initialization
@@ -192,6 +196,12 @@ async def search_mentions(
 
 
 server = MCPServer("issue-tracker", extensions=[openai_extensions])
+```
+
+All extensions compose into a single `OpenAIExtensions` instance:
+
+```python
+server = MCPServer("my-server", extensions=[apps, openai_extensions])
 ```
 
 ## [Form Elicitation](../docs/spec.md#openai-form-elicitation)

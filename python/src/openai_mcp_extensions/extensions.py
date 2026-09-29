@@ -11,6 +11,7 @@ from mcp.server.mcpserver.context import Context
 
 from openai_mcp_extensions.form import elicit_form
 from openai_mcp_extensions.mentions import OpenAIMentions
+from openai_mcp_extensions.settings import OpenAISettings
 
 
 class OpenAIExtensions(Extension):
@@ -20,11 +21,30 @@ class OpenAIExtensions(Extension):
 
     def __init__(self) -> None:
         self.mentions = OpenAIMentions()
+        self._settings: OpenAISettings | None = None
+
+    @property
+    def settings(self) -> OpenAISettings:
+        if self._settings is None:
+            raise AttributeError(
+                "Settings have not been registered. "
+                "Call register_settings() before accessing."
+            )
+        return self._settings
+
+    def register_settings(self, settings: OpenAISettings) -> OpenAISettings:
+        if self._settings is not None:
+            raise ValueError("Settings are already registered on this extension.")
+        self._settings = settings
+        return settings
 
     def tools(self) -> Sequence[ToolBinding]:
         """Contribute only the OpenAI tools explicitly configured by the server."""
 
-        return self.mentions.tools()
+        bindings: list[ToolBinding] = list(self.mentions.tools())
+        if self._settings is not None:
+            bindings.extend(self._settings.tools())
+        return bindings
 
     async def elicit_input(
         self,
