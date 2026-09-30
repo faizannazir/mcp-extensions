@@ -380,18 +380,15 @@ def validate_form_selections(schema: FormSchema[FormField], content: Mapping[str
 
 def _valid_pattern(field: FormField, value: object) -> bool:
     pattern = field.pattern
-    if pattern is None:
-        if isinstance(field.items, _StringSchema):
-            pattern = field.items.pattern
+    if pattern is None and isinstance(field.items, _StringSchema):
+        pattern = field.items.pattern
     if pattern is None:
         return True
-    if not isinstance(value, str):
-        return False
     if field.type == "array":
         if not isinstance(value, list):
             return False
         return all(isinstance(item, str) and re.fullmatch(pattern, item) for item in value)
-    return re.fullmatch(pattern, value) is not None
+    return isinstance(value, str) and re.fullmatch(pattern, value) is not None
 
 
 def _valid_value(
@@ -402,14 +399,23 @@ def _valid_value(
     uploaded_uris: tuple[str, ...] = (),
     allow_user_files: bool = False,
 ) -> bool:
-    if field.file_input is not None and not (
-        allow_user_files and field.file_input.user_options is not None
-    ):
-        choices = {option.uri for option in field.file_input.options}
-        choices.update(uploaded_uris)
-        selected = cast(list[object], value) if isinstance(value, list) else [value]
-        if any(not isinstance(uri, str) or uri not in choices for uri in selected):
-            return False
+    if field.file_input is not None:
+        selection = field.file_input.selection
+        user_options = field.file_input.user_options
+        if selection == "implicit":
+            pass
+        elif allow_user_files and user_options is not None:
+            pass
+        else:
+            choices = {option.uri for option in field.file_input.options}
+            choices.update(uploaded_uris)
+            selected = (
+                cast(list[object], value) if isinstance(value, list) else [value]
+            )
+            if any(
+                not isinstance(uri, str) or uri not in choices for uri in selected
+            ):
+                return False
     if (
         not pending_uploads
         and field.enum is not None
