@@ -478,8 +478,6 @@ def _valid_string(field: _StringConstraints, value: str) -> bool:
         return False
     if field.pattern is not None and re.search(field.pattern, value) is None:
         return False
-    if field.pattern is not None and re.search(field.pattern, value) is None:
-        return False
     try:
         if field.format == "email":
             validate_email(value, check_deliverability=False, test_environment=True)
