@@ -357,12 +357,6 @@ def is_valid_value(
         pending_uploads=pending_uploads,
         uploaded_uris=uploaded_uris,
     )
-    return _valid_value(
-        field,
-        value,
-        pending_uploads=pending_uploads,
-        uploaded_uris=uploaded_uris,
-    )
 
 
 def validate_file_selections(schema: FormSchema[FormField], content: Mapping[str, object]) -> None:
@@ -481,6 +475,8 @@ def _valid_string(field: _StringConstraints, value: str) -> bool:
     if (field.min_length is not None and len(value) < field.min_length) or (
         field.max_length is not None and len(value) > field.max_length
     ):
+        return False
+    if field.pattern is not None and re.search(field.pattern, value) is None:
         return False
     if field.pattern is not None and re.search(field.pattern, value) is None:
         return False
