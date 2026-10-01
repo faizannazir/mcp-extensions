@@ -357,6 +357,12 @@ def is_valid_value(
         pending_uploads=pending_uploads,
         uploaded_uris=uploaded_uris,
     )
+    return _valid_value(
+        field,
+        value,
+        pending_uploads=pending_uploads,
+        uploaded_uris=uploaded_uris,
+    )
 
 
 def validate_file_selections(schema: FormSchema[FormField], content: Mapping[str, object]) -> None:
