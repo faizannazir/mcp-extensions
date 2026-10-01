@@ -349,8 +349,6 @@ def is_valid_value(
     uploaded_uris: tuple[str, ...] = (),
 ) -> bool:
     """Validate JSON without coercion or defaults."""
-    if field.has_pattern:
-        return _valid_pattern(field, value)
     return _valid_value(
         field,
         value,
@@ -376,22 +374,6 @@ def validate_form_selections(schema: FormSchema[FormField], content: Mapping[str
     for name, field in schema.properties.items():
         if field.options and name in content and not _valid_value(field, content[name]):
             raise ValueError(f"Invalid selection for {name!r}")
-
-
-def _valid_pattern(field: FormField, value: object) -> bool:
-    pattern = field.pattern
-    if pattern is None:
-        if isinstance(field.items, _StringSchema):
-            pattern = field.items.pattern
-    if pattern is None:
-        return True
-    if not isinstance(value, str):
-        return False
-    if field.type == "array":
-        if not isinstance(value, list):
-            return False
-        return all(isinstance(item, str) and re.fullmatch(pattern, item) for item in value)
-    return re.fullmatch(pattern, value) is not None
 
 
 def _valid_value(
