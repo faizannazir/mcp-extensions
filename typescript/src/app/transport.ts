@@ -66,8 +66,7 @@ export function createAppTransport<
       for (const listener of listeners.get(message.method) ?? []) {
         try {
           listener((message.params ?? {}) as Payload);
-        } catch (error) {
-          console.error(`Listener error for ${message.method}:`, error);
+        } catch {
         }
       }
     }
