@@ -67,6 +67,7 @@ export function createAppTransport<
         try {
           listener((message.params ?? {}) as Payload);
         } catch {
+          // A faulty listener must not block the remaining listeners.
         }
       }
     }
