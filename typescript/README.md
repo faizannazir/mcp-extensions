@@ -35,7 +35,9 @@ import { OpenAIExtensions } from "@openai/mcp-extensions/app";
 const app = new App({ name: "my-app", version: "1.0.0" });
 const openaiExtensions = new OpenAIExtensions(app);
 
-app.addEventListener("toolresult", (result) => render(result.structuredContent));
+app.addEventListener("toolresult", (result) =>
+  render(result.structuredContent),
+);
 await app.connect();
 ```
 
@@ -69,7 +71,9 @@ function applyHostContext(context: ReturnType<App["getHostContext"]>): void {
 }
 
 app.addEventListener("hostcontextchanged", applyHostContext);
-app.addEventListener("toolresult", (result) => render(result.structuredContent));
+app.addEventListener("toolresult", (result) =>
+  render(result.structuredContent),
+);
 await app.connect();
 applyHostContext(app.getHostContext());
 ```
