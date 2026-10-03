@@ -1,16 +1,13 @@
 import { createRoot } from "react-dom/client";
-import { OpenAIExtensions } from "@openai/mcp-extensions/app";
-import { App } from "@modelcontextprotocol/ext-apps";
-
-const app = new App();
-const openai = new OpenAIExtensions(app);
+import { app } from "./index.js";
 
 function SqlQueryBuilder() {
   return (
     <div className="flex h-full flex-col gap-4 p-4">
       <h1 className="text-lg font-semibold">SQL Query Builder</h1>
       <p className="text-sm opacity-70">
-        Build and run SQL queries with table schema inspection, column selection, and saved queries.
+        Build and run SQL queries with table schema inspection, column
+        selection, and saved queries.
       </p>
       <div className="grid gap-3">
         <div className="rounded-lg border p-3">
@@ -29,3 +26,7 @@ function SqlQueryBuilder() {
 
 const root = createRoot(document.getElementById("root")!);
 root.render(<SqlQueryBuilder />);
+
+app.connect().catch(() => {
+  // Renders standalone when no MCP host is attached.
+});

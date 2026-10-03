@@ -1,5 +1,5 @@
 import { build } from "esbuild";
-import { rm, mkdir, copyFile, writeFile } from "node:fs/promises";
+import { rm, mkdir, writeFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -26,7 +26,12 @@ await build({
   target: "es2022",
   outfile: resolve(root, "dist/app.js"),
   format: "esm",
-  external: ["react", "react-dom", "@modelcontextprotocol/ext-apps", "@openai/mcp-extensions"],
+  external: [
+    "react",
+    "react-dom",
+    "@modelcontextprotocol/ext-apps",
+    "@openai/mcp-extensions",
+  ],
 });
 
 const html = await import("node:fs").then((fs) =>
@@ -37,5 +42,3 @@ const appHtml = html.replace(
   '<script type="module" src="./app.js"></script>',
 );
 await writeFile(resolve(root, "dist/app.html"), appHtml);
-
-console.log("Build complete.");

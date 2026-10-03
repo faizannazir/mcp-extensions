@@ -1,4 +1,9 @@
-import type { SqlPreferences, SqlQuery, SqlTable } from "../shared/contracts.js";
+import { defaultSqlPreferences } from "../shared/contracts.js";
+import type {
+  SqlPreferences,
+  SqlQuery,
+  SqlTable,
+} from "../shared/contracts.js";
 
 const TABLES: SqlTable[] = [
   {
@@ -10,8 +15,18 @@ const TABLES: SqlTable[] = [
       { name: "id", type: "uuid", nullable: false, isPrimary: true },
       { name: "email", type: "text", nullable: false, isPrimary: false },
       { name: "name", type: "text", nullable: true, isPrimary: false },
-      { name: "created_at", type: "timestamptz", nullable: false, isPrimary: false },
-      { name: "last_login", type: "timestamptz", nullable: true, isPrimary: false },
+      {
+        name: "created_at",
+        type: "timestamptz",
+        nullable: false,
+        isPrimary: false,
+      },
+      {
+        name: "last_login",
+        type: "timestamptz",
+        nullable: true,
+        isPrimary: false,
+      },
     ],
   },
   {
@@ -22,9 +37,19 @@ const TABLES: SqlTable[] = [
     columns: [
       { name: "id", type: "uuid", nullable: false, isPrimary: true },
       { name: "user_id", type: "uuid", nullable: false, isPrimary: false },
-      { name: "total", type: "numeric(10,2)", nullable: false, isPrimary: false },
+      {
+        name: "total",
+        type: "numeric(10,2)",
+        nullable: false,
+        isPrimary: false,
+      },
       { name: "status", type: "text", nullable: false, isPrimary: false },
-      { name: "created_at", type: "timestamptz", nullable: false, isPrimary: false },
+      {
+        name: "created_at",
+        type: "timestamptz",
+        nullable: false,
+        isPrimary: false,
+      },
     ],
   },
   {
@@ -35,7 +60,12 @@ const TABLES: SqlTable[] = [
     columns: [
       { name: "id", type: "uuid", nullable: false, isPrimary: true },
       { name: "name", type: "text", nullable: false, isPrimary: false },
-      { name: "price", type: "numeric(10,2)", nullable: false, isPrimary: false },
+      {
+        name: "price",
+        type: "numeric(10,2)",
+        nullable: false,
+        isPrimary: false,
+      },
       { name: "category", type: "text", nullable: true, isPrimary: false },
       { name: "in_stock", type: "boolean", nullable: false, isPrimary: false },
     ],
@@ -50,7 +80,12 @@ const TABLES: SqlTable[] = [
       { name: "event_type", type: "text", nullable: false, isPrimary: false },
       { name: "user_id", type: "uuid", nullable: true, isPrimary: false },
       { name: "properties", type: "jsonb", nullable: true, isPrimary: false },
-      { name: "timestamp", type: "timestamptz", nullable: false, isPrimary: false },
+      {
+        name: "timestamp",
+        type: "timestamptz",
+        nullable: false,
+        isPrimary: false,
+      },
     ],
   },
   {
@@ -61,8 +96,18 @@ const TABLES: SqlTable[] = [
     columns: [
       { name: "id", type: "uuid", nullable: false, isPrimary: true },
       { name: "user_id", type: "uuid", nullable: false, isPrimary: false },
-      { name: "started_at", type: "timestamptz", nullable: false, isPrimary: false },
-      { name: "ended_at", type: "timestamptz", nullable: true, isPrimary: false },
+      {
+        name: "started_at",
+        type: "timestamptz",
+        nullable: false,
+        isPrimary: false,
+      },
+      {
+        name: "ended_at",
+        type: "timestamptz",
+        nullable: true,
+        isPrimary: false,
+      },
       { name: "ip_address", type: "inet", nullable: true, isPrimary: false },
     ],
   },
@@ -101,12 +146,7 @@ export interface SqlStore {
 }
 
 export function createSqlStore(): SqlStore {
-  let preferences: SqlPreferences = {
-    defaultSchema: "public",
-    maxRows: 100,
-    format: "table",
-    showTimings: true,
-  };
+  let preferences: SqlPreferences = { ...defaultSqlPreferences };
 
   return {
     async listTables() {

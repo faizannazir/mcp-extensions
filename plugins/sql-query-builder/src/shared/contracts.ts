@@ -22,12 +22,19 @@ export const sqlQuerySchema = z.strictObject({
 });
 
 export const sqlPreferencesSchema = z.strictObject({
-  defaultSchema: z.enum(["public", "analytics", "staging"]).default("public"),
-  maxRows: z.number().int().min(10).max(10000).default(100),
-  format: z.enum(["table", "json", "csv"]).default("table"),
-  showTimings: z.boolean().default(true),
+  defaultSchema: z.enum(["public", "analytics", "staging"]),
+  maxRows: z.number().int().min(10).max(10000),
+  format: z.enum(["table", "json", "csv"]),
+  showTimings: z.boolean(),
 });
 
 export type SqlTable = z.infer<typeof sqlTableSchema>;
 export type SqlQuery = z.infer<typeof sqlQuerySchema>;
 export type SqlPreferences = z.infer<typeof sqlPreferencesSchema>;
+
+export const defaultSqlPreferences: SqlPreferences = {
+  defaultSchema: "public",
+  maxRows: 100,
+  format: "table",
+  showTimings: true,
+};

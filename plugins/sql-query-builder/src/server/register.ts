@@ -1,11 +1,16 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
+  createElicitInput,
   createMentions,
   createSettings,
   type OpenAIFormRequestParams,
 } from "@openai/mcp-extensions/server";
 import { z } from "zod";
-import { sqlPreferencesSchema, sqlQuerySchema, sqlTableSchema } from "../shared/contracts.js";
+import {
+  sqlPreferencesSchema,
+  sqlQuerySchema,
+  sqlTableSchema,
+} from "../shared/contracts.js";
 import type { SqlStore } from "./store.js";
 
 export type SqlServerOptions = {
@@ -26,7 +31,12 @@ const readonly = {
   openWorldHint: false,
 };
 
-export function registerSqlServer({ server, store, html, iconSvg }: SqlServerOptions) {
+export function registerSqlServer({
+  server,
+  store,
+  html,
+  iconSvg,
+}: SqlServerOptions) {
   const UI = "ui://sql-query-builder/app-v1";
   const icon = {
     src: "data:image/svg+xml," + encodeURIComponent(iconSvg),
@@ -39,6 +49,7 @@ export function registerSqlServer({ server, store, html, iconSvg }: SqlServerOpt
     "openai/iconStyle": "monochrome",
   });
 
+  const elicit = createElicitInput(server);
   const settings = createSettings(server);
   settings.register({
     fields: {
@@ -185,27 +196,31 @@ export function registerSqlServer({ server, store, html, iconSvg }: SqlServerOpt
       annotations: readonly,
       _meta: ui(),
     },
-    async (_args, context) => {
+    async () => {
       const tables = await store.listTables();
-      const { createElicitInput } = await import("@openai/mcp-extensions/server");
-      const elicit = createElicitInput(server);
-      const form = await elicit(context, "Choose a table", {
-        type: "object",
-        required: ["table"],
-        properties: {
-          table: {
-            type: "string",
-            title: "Table",
-            oneOf: tables.map((t) => ({
-              const: t.name,
-              title: t.name,
-              description: t.description,
-            })),
+      const form = await elicit({
+        mode: "form",
+        message: "Choose a table",
+        requestedSchema: {
+          type: "object",
+          required: ["table"],
+          properties: {
+            table: {
+              type: "string",
+              title: "Table",
+              oneOf: tables.map((t) => ({
+                const: t.name,
+                title: t.name,
+                description: t.description,
+              })),
+            },
           },
-        },
-      } as OpenAIFormRequestParams["requestedSchema"]);
+        } as OpenAIFormRequestParams["requestedSchema"],
+      });
       if (form.action !== "accept") return result({ selection: form.action });
-      return result({ table: await store.getTable(String(form.content.table)) });
+      return result({
+        table: await store.getTable(String(form.content.table)),
+      });
     },
   );
 
@@ -220,42 +235,51 @@ export function registerSqlServer({ server, store, html, iconSvg }: SqlServerOpt
       }),
       annotations: readonly,
     },
-    async ({ tableName, selection }, context) => {
+    async ({ tableName, selection }) => {
       const table = await store.getTable(tableName);
       if (!table) throw Error("Unknown table: " + tableName);
-      const { createElicitInput } = await import("@openai/mcp-extensions/server");
-      const elicit = createElicitInput(server);
-      const form = await elicit(context, `Select columns from ${tableName}`, {
-        type: "object",
-        required: ["columns"],
-        properties: {
-          columns: {
-            type: "array",
-            title: "Columns",
-            items: {
-              type: "string",
-              enum: table.columns.map((c) => c.name),
-            },
-            "x-openai-input": {
-              type: "resource",
-              selection,
-              options: table.columns.map((c) => ({
-                uri: `sql://columns/${tableName}/${c.name}`,
-                name: c.name,
-                title: c.name,
-                _meta: {
-                  "openai/thumbnail": {
-                    src: "data:image/svg+xml," + encodeURIComponent(iconSvg),
-                    mimeType: "image/svg+xml",
+      const form = await elicit({
+        mode: "form",
+        message: `Select columns from ${tableName}`,
+        requestedSchema: {
+          type: "object",
+          required: ["columns"],
+          properties: {
+            columns: {
+              type: "array",
+              title: "Columns",
+              items: {
+                type: "string",
+                format: "uri",
+              },
+              "x-openai-input": {
+                type: "resource",
+                selection,
+                options: table.columns.map((c) => ({
+                  uri: `sql://columns/${tableName}/${c.name}`,
+                  name: c.name,
+                  title: c.name,
+                  _meta: {
+                    "openai/thumbnail": {
+                      src: "data:image/svg+xml," + encodeURIComponent(iconSvg),
+                      mimeType: "image/svg+xml",
+                    },
                   },
-                },
-              })),
+                })),
+              },
             },
           },
-        },
-      } as OpenAIFormRequestParams["requestedSchema"]);
+        } as OpenAIFormRequestParams["requestedSchema"],
+      });
       if (form.action !== "accept") return result({ selection: form.action });
-      return result({ columns: form.content.columns });
+      const columns = Array.isArray(form.content.columns)
+        ? form.content.columns
+        : [form.content.columns];
+      const uris = columns.map(String);
+      return result({
+        columns: uris.map((uri) => uri.split("/").pop()),
+        uris,
+      });
     },
   );
 
@@ -263,36 +287,40 @@ export function registerSqlServer({ server, store, html, iconSvg }: SqlServerOpt
     "sql.reviewQuery",
     {
       title: "Review query",
-      description: "Demonstrate form elicitation with patterns, enums, and numbers.",
+      description:
+        "Demonstrate form elicitation with patterns, enums, and numbers.",
       inputSchema: z.object({}),
       annotations: readonly,
     },
-    async (_args, context) => {
-      const { createElicitInput } = await import("@openai/mcp-extensions/server");
-      const elicit = createElicitInput(server);
-      const form = await elicit(context, "Review a SQL query", {
-        type: "object",
-        required: ["table", "priority", "approved", "limit"],
-        properties: {
-          table: {
-            type: "string",
-            title: "Table name",
-            pattern: "^[a-z_]+$",
+    async () => {
+      const form = await elicit({
+        mode: "form",
+        message: "Review a SQL query",
+        requestedSchema: {
+          type: "object",
+          required: ["table", "priority", "approved", "limit"],
+          properties: {
+            table: {
+              type: "string",
+              title: "Table name",
+              pattern: "^[a-z_]+$",
+            },
+            priority: {
+              type: "string",
+              title: "Priority",
+              enum: ["low", "normal", "high"],
+            },
+            approved: { type: "boolean", title: "Approved" },
+            limit: {
+              type: "integer",
+              title: "Row limit",
+              minimum: 1,
+              maximum: 10000,
+            },
           },
-          priority: {
-            type: "string",
-            title: "Priority",
-            enum: ["low", "normal", "high"],
-          },
-          approved: { type: "boolean", title: "Approved" },
-          limit: {
-            type: "integer",
-            title: "Row limit",
-            minimum: 1,
-            maximum: 10000,
-          },
-        },
-      } as OpenAIFormRequestParams["requestedSchema"]);
+        } as OpenAIFormRequestParams["requestedSchema"],
+      });
+      if (form.action !== "accept") return result({ selection: form.action });
       return result({ selection: form.action, content: form.content });
     },
   );
